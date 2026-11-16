@@ -1,0 +1,49 @@
+#include <stdio.h>
+#define SLAB1_UNITS 100
+#define SLAB2_UNITS 200
+#define RATE1_PAISE 0
+#define RATE2_PAISE 225
+#define RATE3_PAISE 450
+#define FIXED_CHARGE_PAISE 5000L
+
+typedef unsigned short meter_t;
+unsigned int consumption(meter_t previous, meter_t current) {
+    return (unsigned int)((meter_t)(current - previous));
+}
+
+long compute_bill(int units) {
+    long paise = FIXED_CHARGE_PAISE;
+    if (units > SLAB2_UNITS) {
+        paise += (long)(units - SLAB2_UNITS) * RATE3_PAISE;
+        paise += (long)(SLAB2_UNITS - SLAB1_UNITS) * RATE2_PAISE;
+    } else if (units > SLAB1_UNITS) {
+        paise += (long)(units - SLAB1_UNITS) * RATE2_PAISE;
+    }
+    return paise;
+}
+int main(void) {
+    unsigned int prev_input, curr_input;
+    
+    printf("Enter previous reading and current reading: ");
+    
+    if (scanf("%u %u", &prev_input, &curr_input) != 2) {
+        printf("Error: Invalid input format.\n");
+        return 1;
+    }
+
+    meter_t prev = (meter_t)prev_input;
+    meter_t curr = (meter_t)curr_input;
+
+    unsigned int units = consumption(prev, curr);
+    long bill_paise = compute_bill(units);
+    
+    long rupees = bill_paise / 100;
+    long remainder_paise = bill_paise % 100;
+    
+    printf("\nPrevious Reading: %u\n", prev);
+    printf("Current Reading : %u\n", curr);
+    printf("Units Consumed  : %u\n", units);
+    printf("Total Bill      : Rs %ld.%02ld\n", rupees, remainder_paise);
+
+    return 0;
+}
